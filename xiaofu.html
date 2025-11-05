@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>药品食材相互作用查询</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #333;
+        }
+        
+        .search-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        label {
+            font-weight: 600;
+        }
+        
+        select, input[type="text"] {
+            padding: 8px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .high-risk {
+            background-color: #ffcccc;
+        }
+        
+        .medium-risk {
+            background-color: #fff0cc;
+        }
+        
+        .low-risk {
+            background-color: #e6ffe6;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>药品食材相互作用查询</h1>
+        <p>输入药品或食材名称，查询它们之间的相互作用关系</p >
+    </header>
+    
+    <div class="search-container">
+        <div class="filters">
+            <div class="filter-group">
+                <label for="drugCategory">药品分类:</label>
+                <select id="drugCategory">
+                    <option value="all">全部</option>
+                    <option value="statins">他汀类</option>
+                    <option value="anticoagulants">抗凝药</option>
+                    <option value="antihypertensives">降压药</option>
+                    <option value="antidiabetics">降糖药</option>
+                    <option value="analgesics">镇痛药</option>
+                    <option value="antidepressants">抗抑郁药</option>
+                    <option value="antibiotics">抗生素</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="foodCategory">食材分类:</label>
+                <select id="foodCategory">
+                    <option value="all">全部</option>
+                    <option value="fruits">水果</option>
+                    <option value="vegetables">蔬菜</option>
+                    <option value="alcohol">酒精</option>
+                    <option value="dairy">乳制品</option>
+                    <option value="grains">谷物</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="riskLevel">风险等级:</label>
+                <select id="riskLevel">
+                    <option value="all">全部</option>
+                    <option value="high">红色高风险</option>
+                    <option value="medium">黄色中风险</option>
+                    <option value="low">绿色低风险</option>
+                </select>
+            </div>
+            <div class="filter-group" style="margin-left: auto;">
+                <input type="text" id="searchInput" placeholder="请输入药品名称或食材名称...">
+            </div>
+        </div>
+    </div>
+    
+    <table id="interactionTable">
+        <thead>
+            <tr>
+                <<th>药品通用名</</th>
+                <<th>食材名称</</th>
+                <<th>相互作用类型</</th>
+                <<th>风险等级</</th>
+                <<th>作用机制简述</</th>
+                <<th>推荐建议</</th>
+                <<th>数据来源</</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="high-risk" data-drug="statins" data-food="fruits" data-risk="high">
+                <td>辛伐他汀</td>
+                <td>西柚（葡萄柚）</td>
+                <td>代谢抑制</td>
+                <td>红色高风险</td>
+                <td>西柚抑制CYP3A4酶，增加药物血药浓度</td>
+                <td>服药期间严禁食用西柚及制品</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="medium-risk" data-drug="anticoagulants" data-food="vegetables" data-risk="medium">
+                <td>华法林</td>
+                <td>菠菜</td>
+                <td>拮抗作用</td>
+                <td>黄色中风险</td>
+                <td>菠菜含大量维生素K，影响抗凝效果</td>
+                <td>每日摄入量需固定，避免骤增骤减</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="low-risk" data-drug="antihypertensives" data-food="vegetables" data-risk="low">
+                <td>硝苯地平</td>
+                <td>芹菜</td>
+                <td>协同辅助</td>
+                <td>绿色低风险</td>
+                <td>芹菜含芹菜素，辅助舒张血管</td>
+                <td>可适量搭配食用，增强降压辅助效果</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="low-risk" data-drug="antidiabetics" data-food="vegetables" data-risk="low">
+                <td>二甲双胍</td>
+                <td>苦瓜</td>
+                <td>协同辅助</td>
+                <td>绿色低风险</td>
+                <td>苦瓜含苦瓜皂苷，辅助改善胰岛素敏感性</td>
+                <td>可作为日常蔬菜搭配食用</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="high-risk" data-drug="analgesics" data-food="alcohol" data-risk="high">
+                <td>阿司匹林</td>
+                <td>酒精</td>
+                <td>毒性增强</td>
+                <td>红色高风险</td>
+                <td>酒精刺激胃黏膜，加重药物致胃出血风险</td>
+                <td>服药期间严格禁酒</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="high-risk" data-drug="antidepressants" data-food="grains" data-risk="high">
+                <td>氟西汀</td>
+                <td>酪胺类食物（如奶酪）</td>
+                <td>代谢抑制</td>
+                <td>红色高风险</td>
+                <td>抑制MAO酶，酪胺代谢受阻，导致血压骤升</td>
+                <td>服药期间避免食用含大量酪胺的食物</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="medium-risk" data-drug="antibiotics" data-food="dairy" data-risk="medium">
+                <td>四环素</td>
+                <td>牛奶</td>
+                <td>络合作用</td>
+                <td>黄色中风险</td>
+                <td>牛奶中的钙与药物形成络合物，降低吸收率</td>
+                <td>服药前后2小时避免食用乳制品</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="medium-risk" data-drug="antihypertensives" data-food="grains" data-risk="medium">
+                <td>卡托普利</td>
+                <td>高盐食物</td>
+                <td>拮抗作用</td>
+                <td>黄色中风险</td>
+                <td>高盐摄入增加血容量，降低降压效果</td>
+                <td>低盐饮食，每日盐摄入量控制在6g以内</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="low-risk" data-drug="antidiabetics" data-food="grains" data-risk="low">
+                <td>阿卡波糖</td>
+                <td>膳食纤维丰富食物</td>
+                <td>协同辅助</td>
+                <td>绿色低风险</td>
+                <td>膳食纤维延缓碳水化合物吸收，辅助控制血糖</td>
+                <td>可适量搭配食用，有助于血糖平稳</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="high-risk" data-drug="anticoagulants" data-food="alcohol" data-risk="high">
+                <td>华法林</td>
+                <td>酒精</td>
+                <td>酶诱导/抑制</td>
+                <td>红色高风险</td>
+                <td>酒精影响肝酶活性，增强或减弱抗凝效果</td>
+                <td>服药期间严格禁酒</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+            <tr class="medium-risk" data-drug="antibiotics" data-food="alcohol" data-risk="medium">
+                <td>头孢类</td>
+                <td>酒精</td>
+                <td>双硫仑样反应</td>
+                <td>黄色中风险</td>
+                <td>抑制乙醛脱氢酶，导致乙醛蓄积，引发不适</td>
+                <td>服药期间及停药后3天内避免饮酒</td>
+                <td>湘雅医院临床研究</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div id="noResults" class="no-results" style="display: none;">
+        未找到匹配的结果
+    </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const drugCategory = document.getElementById('drugCategory');
+        const foodCategory = document.getElementById('foodCategory');
+        const riskLevel = document.getElementById('riskLevel');
+        const tableRows = document.querySelectorAll('#interactionTable tbody tr');
+        const noResults = document.getElementById('noResults');
+        
+        function applyFilters() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedDrug = drugCategory.value;
+            const selectedFood = foodCategory.value;
+            const selectedRisk = riskLevel.value;
+            let resultsFound = false;
+            
+            tableRows.forEach(row => {
+                const drugData = row.getAttribute('data-drug');
+                const foodData = row.getAttribute('data-food');
+                const riskData = row.getAttribute('data-risk');
+                const cells = row.querySelectorAll('td');
+                let match = true;
+                
+                // 应用药品分类筛选
+                if (selectedDrug !== 'all' && drugData !== selectedDrug) {
+                    match = false;
+                }
+                
+                // 应用食材分类筛选
+                if (selectedFood !== 'all' && foodData !== selectedFood) {
+                    match = false;
+                }
+                
+                // 应用风险等级筛选
+                if (selectedRisk !== 'all' && riskData !== selectedRisk) {
+                    match = false;
+                }
+                
+                // 应用搜索筛选
+                if (searchTerm) {
+                    let textMatch = false;
+                    cells.forEach(cell => {
+                        if (cell.textContent.toLowerCase().includes(searchTerm)) {
+                            textMatch = true;
+                        }
+                    });
+                    if (!textMatch) {
+                        match = false;
+                    }
+                }
+                
+                if (match) {
+                    row.style.display = '';
+                    resultsFound = true;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+            
+            if (resultsFound) {
+                noResults.style.display = 'none';
+            } else {
+                noResults.style.display = 'block';
+            }
+        }
+        
+        // 为所有筛选控件添加事件监听器
+        searchInput.addEventListener('input', applyFilters);
+        drugCategory.addEventListener('change', applyFilters);
+        foodCategory.addEventListener('change', applyFilters);
+        riskLevel.addEventListener('change', applyFilters);
+        
+        // 初始化时应用一次筛选
+        applyFilters();
+    </script>
+</body>
+</html>
